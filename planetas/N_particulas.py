@@ -1,31 +1,39 @@
 from math import sqrt,sin
 import array 
+from numba import njit
+import numpy
+@njit()
 def double(n):
-    return array.array('d',[0.0]*n)
+    return numpy.empty(n,dtype=numpy.float64)
+    #return array.array('d',[0.0]*n)
 
-h=0.0
+from numba import njit
+
+h=0.0001
 N_par=10
 DEBUG=False
 EULER=True
 VERLET=not EULER
-G_Un=0.0
-epsilon=0.0
+G_Un=1000.0
+epsilon=1.0
 M=double(N_par)
-
+for i in range(N_par):
+        M[i]=1.0+i
+@njit()
 def main():
-    x,y,z,v_x,v_y,v_z = (double(N_par) for _ in range(6) )
+    x,y,z,v_x,v_y,v_z = [double(N_par) for _ in range(6) ]
     #double p_cdm_x,p_cdm_y,p_cdm_z,s_m,restar_x,restar_y,restar_z;
     #double tiempo;
     #int i,j;
     mesfr:int =1000
-    global G_Un
-    global M
-    global epsilon
-    global h
-    G_Un=1000.0
+    #global G_Un
+    #global M
+    #global epsilon
+    #global h
+    #G_Un=1000.0
     p_cdm_x,p_cdm_y,p_cdm_z,s_m= 0.0,0.0,0.0,0.0
     for i in range(N_par):
-        M[i]=1.0+i
+        #M[i]=1.0+i
         x[i]=(N_par*i + 10)
         y[i]=68*sqrt(i) + 13
         z[i]=N_par*sin(6.28*i/N_par)+18
@@ -49,23 +57,24 @@ def main():
         for i in range(N_par):
             print("%f %f %f %f %f %f" %( x[i],y[i],z[i],v_x[i],v_y[i],v_z[i]))
             
-    h=0.0001 #//Paso temporal de la ecuacion diferencial discreta
-    epsilon=1.0 #//Para evitar la singularidad en el cero
+    #h=0.0001 #//Paso temporal de la ecuacion diferencial discreta
+    #epsilon=1.0 #//Para evitar la singularidad en el cero
+
     tiempo=0
 
     print("#     t        T           V             E_t \n");
  
-    for i in range(200):
+    for i in range(200000):
         for j in range(mesfr):
             Evoluciona_dt(x,y,z,v_x,v_y,v_z)
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
-
+@njit()
 def Evoluciona_dt(x, y, z, v_x, v_y, v_z):
     #int i;
-    Fx,Fy,Fz =(double(N_par) for _ in range(3) )
-    v_temp_x,v_temp_y,v_temp_z = (double(N_par) for _ in range(3) )
+    Fx,Fy,Fz =   double(N_par),double(N_par),double(N_par) #  (double(N_par) for _ in range(3) )
+    v_temp_x,v_temp_y,v_temp_z = double(N_par),double(N_par),double(N_par)     #(double(N_par) for _ in range(3) )
     if EULER: 
         Calcula_Fuerza(x,y,z,Fx,Fy,Fz);
         if DEBUG:
@@ -99,7 +108,7 @@ def Evoluciona_dt(x, y, z, v_x, v_y, v_z):
             v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
             v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
 
-
+@njit()
 def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
 
     #double r2,distance;
@@ -119,7 +128,7 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
                 print("F[%d]=%f %f %f" % (i,Fx[i],Fy[i],Fz[i]) )
 
 
-
+@njit()
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
 
     #double r2,distancia;
@@ -140,7 +149,7 @@ def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
             print("i=%3d,r=(%-10.3lf,%-10.3lf,%-10.3lf),v=(%-10.3lf,%-10.3lf,%-10.3lf),Ec=%-10.3lf,Ep=%-10.3lf\n",
                    i,x[i],y[i],z[i],v_x[i],v_y[i],v_z[i],Energia_c,Energia_p)
     Energia=Energia_c+Energia_p
-    print(" %f %f %f %lf %f %f %f %f %f %f" %(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
+    print(" %f %f %f %lf %f %f %f %f %f %f" ,(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
     #//getchar();
 
 main()
