@@ -4,18 +4,17 @@ tiempo 200 loops con arrays python 26 segundos
 tiempo 200 loops arrays numpy  69 secs user, 1:10
 tiempo 200 loops arrays y sin, sqrt numpy 84 segundos. 1:24
 tiempo vectorizando euler 82 segundos 1:22
+tiempo vectorizando y sin reallocs 80 seg user 1:24 total
 """
 #from numba import njit
 import numpy
 import array
-from numpy import sqrt,sin
-#@njit()
+import numpy as np
+from numpy import sqrt,sin, square
 def double(n):
-    #return [0.0]*n
     return numpy.empty(n,dtype=numpy.float64)
-    #return array.array('d',[0.0]*n)
 
-from numba import njit
+#from numba import njit
 
 h=0.0001
 N_par=10
@@ -29,7 +28,10 @@ for i in range(N_par):
         M[i]=1.0+i
 #@njit()
 def main():
-    x,y,z,v_x,v_y,v_z = [double(N_par) for _ in range(6) ]
+    xyz=numpy.empty((3,N_par),dtype=numpy.float64)
+    v_xyz=numpy.empty((3,N_par),dtype=numpy.float64)
+    v_x,v_y,v_z = v_xyz[0],v_xyz[1],v_xyz[2]     #(double(N_par) for _ in range(3) )
+    x,y,z=xyz[0],xyz[1], xyz[2]
     #double p_cdm_x,p_cdm_y,p_cdm_z,s_m,restar_x,restar_y,restar_z;
     #double tiempo;
     #int i,j;
@@ -71,34 +73,36 @@ def main():
 
     tiempo=0
 
-    print("#     t        T           V             E_t \n");
+    print("#     t        T           V             E_t \n")
+    F=numpy.empty((3,N_par),dtype=numpy.float64)
  
     for i in range(200):
         for j in range(mesfr):
-            Evoluciona_dt(x,y,z,v_x,v_y,v_z)
+            Evoluciona_dt(F,xyz,v_xyz,x,y,z,v_x,v_y,v_z)
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
 #@njit()
-def Evoluciona_dt(x, y, z, v_x, v_y, v_z):
+def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
     #int i;
-    Fx,Fy,Fz =   double(N_par),double(N_par),double(N_par) #  (double(N_par) for _ in range(3) )
-    v_temp_x,v_temp_y,v_temp_z = double(N_par),double(N_par),double(N_par)     #(double(N_par) for _ in range(3) )
+    #F=numpy.empty((3,N_par),dtype=numpy.float64)
+    Fx,Fy,Fz =  F[0],F[1],F[2]
+
     if EULER: 
         Calcula_Fuerza(x,y,z,Fx,Fy,Fz);
         if DEBUG:
             print("En evoluciona, h=%f\n",h);
             for i in range(N_par):
                 print("Evol: F[%d]=%f %f %f ,v=%f %f %f" %(i,Fx[i],Fy[i],Fz[i],v_x[i],v_y[i],v_z[i]));
-        #vector N_par
-        x+=h*v_x
-        y+=h*v_y
-        z+=h*v_z
-        #vector(N_par):
-        v_x  += (Fx*h/M);
-        v_y  += (Fy*h/M);
-        v_z  += (Fz*h/M);
+        #vector N_par, xyz
+        xyz += h* v_xyz
+        #vector(N_par) xyz, pero M es la masa, solo vector(NPar), pero debe funcionar
+        v_x  += (Fx*h/M)
+        v_y  += (Fy*h/M)
+        v_z  += (Fz*h/M)
     if VERLET:
+        v_temp=numpy.empty((3,N_par),dtype=numpy.float64)
+        v_temp_x,v_temp_y,v_temp_z = v_temp[0],v_temp[1],v_temp[2]     #(double(N_par) for _ in range(3) )
         Calcula_Fuerza(x,y,z,Fx,Fy,Fz);
         if DEBUG:
             printf("En evoluciona, h=%f",h);
@@ -127,7 +131,11 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
         for j in range(N_par):
             if(i==j):
                 continue
-            r2=epsilon+(x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])+(z[i]-z[j])*(z[i]-z[j])
+            #r2=epsilon+np.sum(square( [(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])] )) #168 segundos!
+            #r2=epsilon+np.linalg.norm([(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])])  #151 segundos
+            #r2=epsilon+np.linalg.norm(np.array([x[i],y[i],z[i]]) -np.array([x[j],y[j],z[j]])   ) #164 -173segundos o mas
+            r2=epsilon+(x[i]-x[j])*(x[i]-x[j])+ (y[i]-y[j])*(y[i]-y[j])+(z[i]-z[j])*(z[i]-z[j]) #eran 84 segundos solo
+            #mencionemos otra alternativa: scipy,spatial,distance.euclidean
             distance=sqrt(r2)
             r2=r2*distance
             Fx[i]-=(G_Un*M[i]*M[j]*(x[i]-x[j])/r2)
