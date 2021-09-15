@@ -3,27 +3,29 @@ tiempo 200 loops con listas  22 segundos
 tiempo 200 loops con arrays python 26 segundos
 tiempo 200 loops arrays numpy  69 secs user, 1:10
 tiempo 200 loops arrays y sin, sqrt numpy 84 segundos. 1:24
-tiempo vectorizando euler 82 segundos 1:22
-tiempo vectorizando y sin reallocs 80 seg user 1:24 total
+tiempo vectorizando euler tiempo vectorizando y sin reallocs 80 seg user 1:24 total
+ si añadimos kronecker: baja a 45 segundos
 """
 #from numba import njit
 import numpy
 import array
 import numpy as np
 from numpy import sqrt,sin, square
-def double(n):
-    return numpy.empty(n,dtype=numpy.float64)
 
+N_par=10
+
+kronecker=np.eye(N_par)
+nodiag=1-kronecker
 #from numba import njit
 
 h=0.0001
-N_par=10
+
 DEBUG=False
 EULER=True
 VERLET=not EULER
 G_Un=1000.0
 epsilon=1.0
-M=double(N_par)
+M=numpy.empty(N_par,dtype=numpy.float64)
 for i in range(N_par):
         M[i]=1.0+i
 #@njit()
@@ -125,10 +127,8 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
     #double r2,distance;
     #int i,j;
     #range(N_par):
-        Fx=Fy=Fz=0.0
+        Fx[:]=Fy[:]=Fz[:]=0.0
         for j in range(N_par):
-            if(i==j):
-                continue
             #r2=epsilon+np.sum(square( [(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])] )) #168 segundos!
             #r2=epsilon+np.linalg.norm([(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])])  #151 segundos
             #r2=epsilon+np.linalg.norm(np.array([x[i],y[i],z[i]]) -np.array([x[j],y[j],z[j]])   ) #164 -173segundos o mas
@@ -136,9 +136,10 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
             #mencionemos otra alternativa: scipy,spatial,distance.euclidean
             distance=sqrt(r2)
             r2=r2*distance
-            Fx-=(G_Un*M*M[j]*(x-x[j])/r2)
-            Fy-=(G_Un*M*M[j]*(y-y[j])/r2)
-            Fz-=(G_Un*M*M[j]*(z-z[j])/r2)
+            Fx-=(G_Un*M*M[j]*(x-x[j])/r2) * (nodiag[j])
+            Fy-=(G_Un*M*M[j]*(y-y[j])/r2) * (nodiag[j])
+            Fz-=(G_Un*M*M[j]*(z-z[j])/r2) * (nodiag[j])
+            
             if DEBUG:
                 print("F[%d]=%f %f %f" % (i,Fx[i],Fy[i],Fz[i]) )
 
@@ -164,7 +165,7 @@ def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
             print("i=%3d,r=(%-10.3lf,%-10.3lf,%-10.3lf),v=(%-10.3lf,%-10.3lf,%-10.3lf),Ec=%-10.3lf,Ep=%-10.3lf\n",
                    i,x[i],y[i],z[i],v_x[i],v_y[i],v_z[i],Energia_c,Energia_p)
     Energia=Energia_c+Energia_p
-    print(" %f %f %f %lf %f %f %f %f %f %f" ,(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
+    print(" %f %f %f %lf %f %f %f %f %f %f" %(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
     #//getchar();
 
 main()
