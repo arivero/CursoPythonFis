@@ -96,10 +96,8 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
                 print("Evol: F[%d]=%f %f %f ,v=%f %f %f" %(i,Fx[i],Fy[i],Fz[i],v_x[i],v_y[i],v_z[i]));
         #vector N_par, xyz
         xyz += h* v_xyz
-        #vector(N_par) xyz, pero M es la masa, solo vector(NPar), pero debe funcionar
-        v_x  += (Fx*h/M)
-        v_y  += (Fy*h/M)
-        v_z  += (Fz*h/M)
+        #vector(N_par) xyz, pero M es la masa, solo vector(NPar), pero debe funcionar porque numpy admite esa division por filas
+        v_xyz  += F*h/M
     if VERLET:
         v_temp=numpy.empty((3,N_par),dtype=numpy.float64)
         v_temp_x,v_temp_y,v_temp_z = v_temp[0],v_temp[1],v_temp[2]     #(double(N_par) for _ in range(3) )
@@ -126,21 +124,21 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
 
     #double r2,distance;
     #int i,j;
-    for i in range(N_par):
-        Fx[i]=Fy[i]=Fz[i]=0.0
+    #range(N_par):
+        Fx=Fy=Fz=0.0
         for j in range(N_par):
             if(i==j):
                 continue
             #r2=epsilon+np.sum(square( [(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])] )) #168 segundos!
             #r2=epsilon+np.linalg.norm([(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])])  #151 segundos
             #r2=epsilon+np.linalg.norm(np.array([x[i],y[i],z[i]]) -np.array([x[j],y[j],z[j]])   ) #164 -173segundos o mas
-            r2=epsilon+(x[i]-x[j])*(x[i]-x[j])+ (y[i]-y[j])*(y[i]-y[j])+(z[i]-z[j])*(z[i]-z[j]) #eran 84 segundos solo
+            r2=epsilon+(x-x[j])*(x-x[j])+ (y-y[j])*(y-y[j])+(z-z[j])*(z-z[j]) #eran 84 segundos solo
             #mencionemos otra alternativa: scipy,spatial,distance.euclidean
             distance=sqrt(r2)
             r2=r2*distance
-            Fx[i]-=(G_Un*M[i]*M[j]*(x[i]-x[j])/r2)
-            Fy[i]-=(G_Un*M[i]*M[j]*(y[i]-y[j])/r2)
-            Fz[i]-=(G_Un*M[i]*M[j]*(z[i]-z[j])/r2)
+            Fx-=(G_Un*M*M[j]*(x-x[j])/r2)
+            Fy-=(G_Un*M*M[j]*(y-y[j])/r2)
+            Fz-=(G_Un*M*M[j]*(z-z[j])/r2)
             if DEBUG:
                 print("F[%d]=%f %f %f" % (i,Fx[i],Fy[i],Fz[i]) )
 
