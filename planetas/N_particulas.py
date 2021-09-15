@@ -1,13 +1,13 @@
 from math import sqrt,sin
 import array 
-from numba import njit
+#from numba import njit
 import numpy
-@njit()
+#@njit()
 def double(n):
-    return numpy.empty(n,dtype=numpy.float64)
+    return [0.0]*n
+    #return numpy.empty(n,dtype=numpy.float64)
     #return array.array('d',[0.0]*n)
 
-from numba import njit
 
 h=0.0001
 N_par=10
@@ -19,7 +19,7 @@ epsilon=1.0
 M=double(N_par)
 for i in range(N_par):
         M[i]=1.0+i
-@njit()
+#@njit()
 def main():
     x,y,z,v_x,v_y,v_z = [double(N_par) for _ in range(6) ]
     #double p_cdm_x,p_cdm_y,p_cdm_z,s_m,restar_x,restar_y,restar_z;
@@ -64,13 +64,13 @@ def main():
 
     print("#     t        T           V             E_t \n");
  
-    for i in range(200000):
+    for i in range(200):
         for j in range(mesfr):
             Evoluciona_dt(x,y,z,v_x,v_y,v_z)
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
-@njit()
+#@njit()
 def Evoluciona_dt(x, y, z, v_x, v_y, v_z):
     #int i;
     Fx,Fy,Fz =   double(N_par),double(N_par),double(N_par) #  (double(N_par) for _ in range(3) )
@@ -108,7 +108,7 @@ def Evoluciona_dt(x, y, z, v_x, v_y, v_z):
             v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
             v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
 
-@njit()
+#@njit()
 def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
 
     #double r2,distance;
@@ -128,7 +128,7 @@ def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
                 print("F[%d]=%f %f %f" % (i,Fx[i],Fy[i],Fz[i]) )
 
 
-@njit()
+#@njit()
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
 
     #double r2,distancia;
