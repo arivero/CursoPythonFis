@@ -4,7 +4,9 @@ tiempo 200 loops con arrays python 26 segundos
 tiempo 200 loops arrays numpy  69 secs user, 1:10
 tiempo 200 loops arrays y sin, sqrt numpy 84 segundos. 1:24
 tiempo vectorizando euler tiempo vectorizando y sin reallocs 80 seg user 1:24 total
- si añadimos kronecker: baja a 45 segundos
+ si añadimos kronecker: baja a 45 segundos ... y sigue dando lo mismo que el Npython.txt :-)
+ si transponemos para poder multiplicar vectorizado, nos baja a 39 segundos
+ y a 35 segundos si usamos la transposicion tambien en la distancia.
 """
 #from numba import njit
 import numpy
@@ -91,7 +93,7 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
     Fx,Fy,Fz =  F[0],F[1],F[2]
 
     if EULER: 
-        Calcula_Fuerza(x,y,z,Fx,Fy,Fz);
+        Calcula_Fuerza(F,xyz)
         if DEBUG:
             print("En evoluciona, h=%f\n",h);
             for i in range(N_par):
@@ -115,30 +117,35 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
             y[i]+=h*v_temp_y[i]
             v_temp_z[i]=v_z[i]+0.5*Fz[i]*h/M[i];
             z[i]+=h*v_temp_z[i]
-        Calcula_Fuerza(x,y,z,Fx,Fy,Fz) #Ya hemos cambiado r, esta es la nueva fuerza
+        Calcula_Fuerza(x,y,z,Fx,Fy,Fz,F) #Ya hemos cambiado r, esta es la nueva fuerza
         for i in range(N_par):
             v_x[i]  = v_temp_x[i]+0.5*Fx[i]*h/M[i]
             v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
             v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
 
 #@njit()
-def Calcula_Fuerza(x,y,z,Fx,Fy,Fz):
+def Calcula_Fuerza(F,xyz):
 
     #double r2,distance;
     #int i,j;
     #range(N_par):
-        Fx[:]=Fy[:]=Fz[:]=0.0
+        F[:,:]=0.0
+        x=xyz[0]
+        y=xyz[1]
+        z=xyz[2]
         for j in range(N_par):
-            #r2=epsilon+np.sum(square( [(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])] )) #168 segundos!
-            #r2=epsilon+np.linalg.norm([(x[i]-x[j]),(y[i]-y[j]),(z[i]-z[j])])  #151 segundos
-            #r2=epsilon+np.linalg.norm(np.array([x[i],y[i],z[i]]) -np.array([x[j],y[j],z[j]])   ) #164 -173segundos o mas
-            r2=epsilon+(x-x[j])*(x-x[j])+ (y-y[j])*(y-y[j])+(z-z[j])*(z-z[j]) #eran 84 segundos solo
-            #mencionemos otra alternativa: scipy,spatial,distance.euclidean
+            r2=epsilon+(x-x[j])*(x-x[j])+ (y-y[j])*(y-y[j])+(z-z[j])*(z-z[j]) #39  segundos 
+            #r2=epsilon+(xyz[0]-xyz[0,j])*(xyz[0]-xyz[0,j])+ (xyz[1]-xyz[1,j])*(xyz[1]-xyz[1,j])+(xyz[2]-xyz[2,j])*(xyz[2]-xyz[2,j])
+            vectors=np.transpose(np.transpose(xyz)-xyz[:,j])
+            #r2=epsilon+np.square(np.linalg.norm(vectors,axis=0)) #39 segundos 
+            #  #mencionemos otra alternativa tambien: scipy,spatial,distance.euclidean 
+            #r2=epsilon+np.sum(vectors*vectors,axis=0) #35 segundos pero difiere enseguida del original
+            #assert(sum(r2-r1)==0)
+           # print(np.size(r2),r2.dtype, vectors.dtype)
             distance=sqrt(r2)
             r2=r2*distance
-            Fx-=(G_Un*M*M[j]*(x-x[j])/r2) * (nodiag[j])
-            Fy-=(G_Un*M*M[j]*(y-y[j])/r2) * (nodiag[j])
-            Fz-=(G_Un*M*M[j]*(z-z[j])/r2) * (nodiag[j])
+            F-=(G_Un*M*M[j]*vectors/r2) * (nodiag[j])  #esto es didactico pero habria que buscar algo mejor
+            #viene de simplifcar Fy-=(G_Un*M*M[j]*(y-y[j])/r2) * (nodiag[j])
             
             if DEBUG:
                 print("F[%d]=%f %f %f" % (i,Fx[i],Fy[i],Fz[i]) )
