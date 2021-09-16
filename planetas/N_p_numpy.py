@@ -26,7 +26,7 @@ h=0.0001
     #h=0.0001 #//Paso temporal de la ecuacion diferencial discreta
     #epsilon=1.0 #//Para evitar la singularidad en el cero
 DEBUG=False
-EULER=True
+EULER=False
 VERLET=not EULER
 G_Un=1000.0
 epsilon=1.0
@@ -102,25 +102,17 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
         #vector(N_par) xyz, pero M es la masa, solo vector(NPar), pero debe funcionar porque numpy admite esa division por filas
         v_xyz  += F*h/M
     if VERLET:
-        v_temp=numpy.empty((3,N_par),dtype=numpy.float64)
-        v_temp_x,v_temp_y,v_temp_z = v_temp[0],v_temp[1],v_temp[2]     #(double(N_par) for _ in range(3) )
-        Calcula_Fuerza(x,y,z,Fx,Fy,Fz);
+        #v_temp=numpy.empty((3,N_par),dtype=numpy.float64)
+        Calcula_Fuerza(F,xyz)
         if DEBUG:
-            printf("En evoluciona, h=%f",h);
+            printf("En evoluciona, h=%f",h)
             for i in range(N_par):
                 print("Evol: F[%d]=%f %f %f ,v=%f %f %f" %( i,Fx[i],Fy[i],Fz[i],v_x[i],v_y[i],v_z[i] ) );
-        for i in range(N_par):
-            v_temp_x[i]=v_x[i]+0.5*Fx[i]*h/M[i];
-            x[i]+=h*v_temp_x[i];
-            v_temp_y[i]=v_y[i]+0.5*Fy[i]*h/M[i];
-            y[i]+=h*v_temp_y[i]
-            v_temp_z[i]=v_z[i]+0.5*Fz[i]*h/M[i];
-            z[i]+=h*v_temp_z[i]
-        Calcula_Fuerza(x,y,z,Fx,Fy,Fz,F) #Ya hemos cambiado r, esta es la nueva fuerza
-        for i in range(N_par):
-            v_x[i]  = v_temp_x[i]+0.5*Fx[i]*h/M[i]
-            v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
-            v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
+        v_temp=v_xyz+0.5*F*h/M
+        xyz+=h*v_temp
+        Calcula_Fuerza(F,xyz) #Ya hemos cambiado r, esta es la nueva fuerza
+        #v_xyz.fill(0.0)
+        np.copyto(v_xyz,v_temp+0.5*F*h/M)
 
 #@njit()
 def Calcula_Fuerza(F,xyz):
