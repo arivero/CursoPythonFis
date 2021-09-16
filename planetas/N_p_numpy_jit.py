@@ -20,7 +20,7 @@ N_secs=200
 
 kronecker=np.eye(N_par)
 nodiag=1-kronecker
-#from numba import njit
+from numba import njit
 
 h=0.0001
     #h=0.0001 #//Paso temporal de la ecuacion diferencial discreta
@@ -122,17 +122,21 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
             v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
             v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
 
-#@njit()
+@njit(parallel=True)
 def Calcula_Fuerza(F,xyz):
     #xyz es un (3,n) 
     #F es tambien un (3,n)
     #vectors tiene que ser un (3,n,n). Promovemos xyz a un (3,1,n) y a un (3,n,1)
-    vectors=xyz[:,None,:]-xyz[:,:,None] #ojo al signo de ambiguedad
+    #vectors=xyz[:,None,:]-xyz[:,:,None] #ojo al signo de ambiguedad
+    vectors=np.expand_dims(xyz,1)-np.expand_dims(xyz,2)
     #r2 es un (n,n)
     x=xyz[0]
     y=xyz[1]
     z=xyz[2]
-    r2=epsilon+(x[:,None]-x)*(x[:,None]-x) + (y[:,None]-y)*(y[:,None]-y)+(z[:,None]-z)*(z[:,None]-z)
+    xx=np.expand_dims(x,1)
+    yy=np.expand_dims(y,1)
+    zz=np.expand_dims(z,1)
+    r2=epsilon+(xx-x)*(xx-x) + (yy-y)*(yy-y)+(zz-z)*(zz-z)
     #r2=epsilon+np.sum(vectors*vectors,axis=0) #mas rapido, pero diverge distinto
     distance=np.sqrt(r2)
     r2=r2*distance
