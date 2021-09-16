@@ -11,6 +11,7 @@ def double(n):
 
 h=0.0001
 N_par=10
+N_secs=200
 DEBUG=False
 EULER=True
 VERLET=not EULER
@@ -64,7 +65,7 @@ def main():
 
     print("#     t        T           V             E_t \n");
  
-    for i in range(200):
+    for i in range(N_secs):
         for j in range(mesfr):
             Evoluciona_dt(x,y,z,v_x,v_y,v_z)
         tiempo+=mesfr*h
