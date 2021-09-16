@@ -2,7 +2,7 @@
 #include <stdio.h>
 //#define DEBUG
 double h;
-#define N_par 10
+#define N_par 100
 double G_Un;
 double epsilon;
 double M[N_par];
@@ -66,7 +66,7 @@ main()
 
     printf("#     t        T           V             E_t \n");
  
-    for(i=0;i<200000;i++)
+    for(i=0;i<200;i++)
     {
 	for(j=0;j<mesfr;j++)
 	    Evoluciona_dt(x,y,z,v_x,v_y,v_z);

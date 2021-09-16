@@ -15,7 +15,7 @@ import array
 import numpy as np
 from numpy import sqrt,sin, square
 
-N_par=10
+N_par=100
 N_secs=200
 
 kronecker=np.eye(N_par)

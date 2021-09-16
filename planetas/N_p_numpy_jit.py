@@ -15,7 +15,7 @@ import array
 import numpy as np
 from numpy import sqrt,sin, square
 
-N_par=10
+N_par=100
 N_secs=200
 
 kronecker=np.eye(N_par)
@@ -39,7 +39,7 @@ MM=M[:,None] * M #Asi, M*M es un (n,n)
 Gmm = - G_Un* MM * nodiag
 
 
-#@njit()
+@njit()
 def main():
     xyz=numpy.empty((3,N_par),dtype=numpy.float64)
     v_xyz=numpy.empty((3,N_par),dtype=numpy.float64)
@@ -86,7 +86,7 @@ def main():
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
-#@njit()
+@njit() #casi no hay ganancia En Ruler, y paralelizando incluso pierde todo lo ganado
 def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
  
     Fx,Fy,Fz =  F[0],F[1],F[2]
@@ -122,7 +122,8 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
             v_y[i]  = v_temp_y[i]+0.5*Fy[i]*h/M[i]
             v_z[i]  = v_temp_z[i]+0.5*Fz[i]*h/M[i]
 
-@njit(parallel=True)
+#sin paralelizar, la ganancia de este bucle es un factor dos
+@njit()#parallel=True)
 def Calcula_Fuerza(F,xyz):
     #xyz es un (3,n) 
     #F es tambien un (3,n)
@@ -136,8 +137,8 @@ def Calcula_Fuerza(F,xyz):
     xx=np.expand_dims(x,1)
     yy=np.expand_dims(y,1)
     zz=np.expand_dims(z,1)
-    r2=epsilon+(xx-x)*(xx-x) + (yy-y)*(yy-y)+(zz-z)*(zz-z)
-    #r2=epsilon+np.sum(vectors*vectors,axis=0) #mas rapido, pero diverge distinto
+    r2=epsilon+(xx-x)*(xx-x) + (yy-y)*(yy-y)+(zz-z)*(zz-z) #mas rapido con jit
+    ##r2=epsilon+np.sum(vectors*vectors,axis=0) #mas rapido sin jit, pero diverge distinto
     distance=np.sqrt(r2)
     r2=r2*distance
 
@@ -146,7 +147,7 @@ def Calcula_Fuerza(F,xyz):
     #return F
 
 
-#@njit()
+@njit()
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
 
 
@@ -164,7 +165,8 @@ def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
             print("i=%3d,r=(%-10.3lf,%-10.3lf,%-10.3lf),v=(%-10.3lf,%-10.3lf,%-10.3lf),Ec=%-10.3lf,Ep=%-10.3lf\n",
                    i,x[i],y[i],z[i],v_x[i],v_y[i],v_z[i],Energia_c,Energia_p)
     Energia=Energia_c+Energia_p
-    print(" %f %f %f %lf %f %f %f %f %f %f" %(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
+    #numba no tiene mod, hay que usar la notacion nueva?
+    print(" %f %f %f %lf %f %f %f %f %f %f" ,(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
     #//getchar();
 
 main()
