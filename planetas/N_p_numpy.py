@@ -20,7 +20,7 @@ N_secs=200
 
 kronecker=np.eye(N_par)
 nodiag=1-kronecker
-#from numba import njit
+from numba import njit
 
 h=0.0001
     #h=0.0001 #//Paso temporal de la ecuacion diferencial discreta
@@ -79,17 +79,19 @@ def main():
 
     print("#     t        T           V             E_t \n")
     F=numpy.empty((3,N_par),dtype=numpy.float64)
- 
+
+    r2=np.full((N_par,N_par),epsilon) #pero asi no es paralelizable, o si?
     for i in range(N_secs):
         for j in range(mesfr):
-            Evoluciona_dt(F,xyz,v_xyz,x,y,z,v_x,v_y,v_z)
+            Evoluciona_dt(F,xyz,v_xyz,x,y,z,v_x,v_y,v_z,r2)
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
 #@njit()
-def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
+def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z,r2):
  
     Fx,Fy,Fz =  F[0],F[1],F[2]
+    r2=np.full((N_par,N_par),epsilon)
 
     if EULER: 
         Calcula_Fuerza(F,xyz)
@@ -103,40 +105,43 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z):
         v_xyz  += F*h/M
     if VERLET:
         #v_temp=numpy.empty((3,N_par),dtype=numpy.float64)
-        Calcula_Fuerza(F,xyz)
+        Calcula_Fuerza(F,xyz,r2)
         if DEBUG:
             printf("En evoluciona, h=%f",h)
             for i in range(N_par):
                 print("Evol: F[%d]=%f %f %f ,v=%f %f %f" %( i,Fx[i],Fy[i],Fz[i],v_x[i],v_y[i],v_z[i] ) );
         v_temp=v_xyz+0.5*F*h/M
         xyz+=h*v_temp
-        Calcula_Fuerza(F,xyz) #Ya hemos cambiado r, esta es la nueva fuerza
+        Calcula_Fuerza(F,xyz,r2) #Ya hemos cambiado r, esta es la nueva fuerza
         #v_xyz.fill(0.0)
         np.copyto(v_xyz,v_temp+0.5*F*h/M)
 
 #@njit()
-def Calcula_Fuerza(F,xyz):
+def Calcula_Fuerza(F,xyz,r2):
     #xyz es un (3,n) 
     #F es tambien un (3,n)
     #vectors tiene que ser un (3,n,n). Promovemos xyz a un (3,1,n) y a un (3,n,1)
-    vectors=xyz[:,None,:]-xyz[:,:,None] #ojo al signo de ambiguedad
+    #vectors=xyz[:,None,:]-xyz[:,:,None] #ojo al signo de ambiguedad
     #r2 es un (n,n)
     x=xyz[0]
     y=xyz[1]
     z=xyz[2]
+    #r2.fill(epsilon)
     r2=epsilon+(x[:,None]-x)*(x[:,None]-x) + (y[:,None]-y)*(y[:,None]-y)+(z[:,None]-z)*(z[:,None]-z)
+    #for i in (0,1,2):
+    #    r2+= (xyz[i][:,None]-xyz[i])*(xyz[i][:,None]-xyz[i])
     #r2=epsilon+np.sum(vectors*vectors,axis=0) #mas rapido, pero diverge distinto
-    distance=np.sqrt(r2)
-    r2=r2*distance
+    #distance=np.sqrt(r2)
+    r2=r2*np.sqrt(r2) #distance
 
     F.fill(0.0)
-    F += np.sum(Gmm*vectors/r2,axis=1) #### la suma en axis=1 y axis=2 no da lo mismo, es el signo +- 
+    F += np.sum(Gmm*(xyz[:,None,:]-xyz[:,:,None])/r2,axis=1) #### la suma en axis=1 y axis=2 no da lo mismo, es el signo +- 
     #return F
 
 
 #@njit()
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
-
+    return
 
     Energia_p,Energia_c= 0.0, 0.0
     for i in range(N_par):

@@ -83,8 +83,8 @@ void Evoluciona_dt(double *x, double *y,double *z,double *v_x,double *v_y,double
     double Fx[N_par],Fy[N_par],Fz[N_par];
     double v_temp_x[N_par],v_temp_y[N_par],v_temp_z[N_par];
 
-#define EULER
-//#define VERLET
+//#define EULER
+#define VERLET
 
 
 #ifdef EULER  
