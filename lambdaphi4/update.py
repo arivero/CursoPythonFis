@@ -7,7 +7,7 @@ extern precision phi[];
 int neigh[2*Dim];
 extern double good,cons;
 extern struct s_datos datos;
-extern float *pointer;
+#extern float *pointer;
 
 
 void Metropolis(int j)      /*  algoritmo de Metropolis */

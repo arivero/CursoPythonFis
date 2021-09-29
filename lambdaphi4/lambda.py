@@ -1,39 +1,34 @@
-#include "lambda.h"
+from lambdaconfig import *
 
-char dir[LPATH];
-unsigned int irr[256];
-unsigned int ir1;
-unsigned char ind,ig1,ig2,ig3;
+char dir[LPATH]; #root
+unsigned int irr[256] #update
+unsigned int ir1 #update INMUTABLE NO SE USA
+unsigned char ind,ig1,ig2,ig3 #update INMUTABLE SOLO SE PONEN A CERO EN INIT
 
-precision phi[V];					/* direccionamientos */
+precision phi[V];  #inici medidas rrot update				
 
-int x_p[L],y_p[L],z_p[L],
+int x_p[L],y_p[L],z_p[L], #inici medidas
   x_m[L],y_m[L],z_m[L];
 int neigh[2*Dim];
 
-double cons,good;
-double obs[n_obs];
-struct s_datos datos;
+double cons,good; #update INMUTABLE Ya no se reajustan, pero se inicializan desde fichero :-(
+double obs[n_obs]  #medidas
+struct s_datos datos #inici medidas root update
 
-float v_dat[n_obs][maxit];
-precision co[L],si[L];              /* -> Estimador */
+float v_dat[n_obs][maxit] #root
+precision co[L],si[L]   #inici medidas
+char name_evol[LPATH+12] #medidas
+
 char name_obs[n_ope][256]={"E_c","E2","E4","M","F","SD"};
 
-extern void lee_datos(int);
-extern void lee_conf(int);
-extern void escribe_res(int);
-extern void escribe_medidas(int,int);
-extern void escribe_conf(int);
-extern void table(void);
-extern void tiempo(void);
-extern void Direccionamientos(void);
-extern void Inicializa(long int,long int);
-extern void Metropolis(int);
-extern void FlipCluster(int,int,int);
-extern void Ajustadelta(double,double);
-extern void Medida(void);
-extern void Correlacion(void);
-char name_evol[LPATH+12];
+if __name__=='__main__'
+    from root import lee_datos,lee_conf,escribe_medidas,escribe_conf,tiempo
+    from inici import table,Direccionamientos,Inicializa
+    from update import Metropolis
+    from medida import Medida
+    #el bloque "compartido"
+    from lambda import * 
+
 int main(void)
 {
   int i,ibin,it,j,site,iop;
@@ -142,3 +137,5 @@ int main(void)
   return 1;
 }
 
+if __name__='__main__':
+    main()
