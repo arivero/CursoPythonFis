@@ -1,10 +1,14 @@
-#include "lambda.h"
+from configlambda import *
+from mainlambda import
+  dir,
+  phi,
+  v_dat,
+  datos
 
+#en C: otros_datos[N_OTROS+1]={N_OTROS,L,L,L}
+otros_datos = [N_OTROS, L,L,L]
 
-
-otros_datos[N_OTROS + 1] = { N_OTROS; L }
-
-tiempo (void)
+def tiempo ():
   static time1 = 0, time2
 
   time2 = time (NULL)
@@ -12,7 +16,7 @@ tiempo (void)
     printf ("%4ds:" % (time2 - time1))
   time1 = time2
 
-pinta_datos (struct s_datos *dat)	# solo para debug 
+def pinta_datos (dat):	# solo para debug 
   printf ("itmax  %ld \n" % (dat.itmax))
   printf ("mesfr  %ld \n" % (dat.mesfr))
   printf ("nbin   %ld \n" % (dat.nbin))
@@ -24,9 +28,10 @@ pinta_datos (struct s_datos *dat)	# solo para debug
   printf ("delta  %f  \n" % (dat.delta))
 
 
-
+def leedatos(i):
   sprintf (name, "%s.%i" % ("input", i)
-
+  name=['']*(LPATH+12)
+  dummy=['']*LPATH
   Finput = fopen (name, "rt")
 
 
@@ -41,20 +46,21 @@ pinta_datos (struct s_datos *dat)	# solo para debug
       printf (" No existe el fichero '%s'\n" % (name))
       exit (0)
   fscanf (Finput, "%s %s" % (dir, dummy))
-  for j in range(0, ptdatos_int = datos.itmax, N_DATOS_INT):
+  #TO DO: TRADUCIR A ZIP ESTAS DOS, O QUITARLAS
+  ptdatos_int = datos.itmax
+  for j in range(0,  N_DATOS_INT):
     fscanf (Finput, "%ld %s" % (ptdatos_int++, dummy))
+  
   for j in range(0, ptdatos_real = datos.Kappa, N_DATOS_FLOAT):
     fscanf (Finput, "%f %s" % (ptdatos_real++, dummy))
   fclose (Finput)
-#ifdef DEBUG
-  pinta_datos (&datos)
-#endif
+  if DEBUG:
+    pinta_datos (datos)
   if datos.itmax > maxit:
       printf (" itmax > %i\a\n" % (maxit))
       exit (0)
   datos.seed += addrandom
-  if datos.flag < 2:				# existe outxxx.dat o conf. ? 
-
+  if datos.flag < 2:	# existe outxxx.dat o conf. ? 
       sprintf (name, "%s%s%03ld.%i" % (dir, "OUT", datos.itcut, i)
       Foutput = fopen (name, "rb")
       if Foutput != NULL:
@@ -67,6 +73,7 @@ pinta_datos (struct s_datos *dat)	# solo para debug
 	  fclose (Foutput)
 	  printf (" %s  ya existe.\a\n" % (name))
 
+def lee_conf(i):
   sprintf (name, "%s%s.%i" % (dir, "conf", i)
 
   Fconfig = fopen (name, "rb")
@@ -85,10 +92,9 @@ pinta_datos (struct s_datos *dat)	# solo para debug
 	printf ("La configuracion no es compatible con este programa.\n")
 	exit (1)
   fread (phi, sizeof (phi[0]), V, Fconfig)
-#ifdef DEBUG
-  pinta_datos (&datosb)
-  #printf("%4d %4d %4d\n",u[0],u[1],u[nlinks-1]) 
-#endif
+  if DEBUG:
+    pinta_datos (&datosb)
+    #printf("%4d %4d %4d\n",u[0],u[1],u[nlinks-1]) 
   if (datos.itmax != datosb.itmax or \
       datos.mesfr != datosb.mesfr or \
       datos.Lambda != datosb.Lambda or datos.flag == 3)
@@ -107,7 +113,7 @@ pinta_datos (struct s_datos *dat)	# solo para debug
       datos.seed = datosb.seed
   fclose (Fconfig)
 
-
+def escribe_medidas(i,t):
 
   sprintf (name, "%s%s%03d.DAT" % (dir, "OUT", i)
 
@@ -125,9 +131,8 @@ pinta_datos (struct s_datos *dat)	# solo para debug
 
   Fconfig = fopen (name_dollar, "wb")
   fwrite (&datos, sizeof (datos), 1, Fconfig)
-#ifdef DEBUG
-  pinta_datos (&datos)
-#endif
+  if DEBUG:
+    pinta_datos (&datos)
   fwrite (otros_datos, sizeof (otros_datos), 1, Fconfig)
   fwrite (phi, sizeof (phi[0]), V, Fconfig)
 

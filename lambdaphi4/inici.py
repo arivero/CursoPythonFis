@@ -1,7 +1,13 @@
-#include "lambda.h"
+from lambdaconfig import *
 
+from mainlambda import
+  x_p[],y_p[],z_p[],
+  x_m[],y_m[],z_m[],
+  phi,
+  co,si,
+  datos
 
-
+def Direccionamientos():
   for i in range(L):
       x_p[i] = 1
       x_m[i] = -1
@@ -18,9 +24,8 @@
   z_p[L - 1] = -z_m[0]
 
 
-
+def Inicializa(semilla, flag):
   srand (semilla)
-
 
   if flag < 2:
       for igen in range(0, V):
@@ -29,6 +34,7 @@
 	else:
 	  phi[igen] = 1.0
 
+def table():
   for i in range(L):
       co[i] = cos (TWOPI * (float) i / (float) L)
       si[i] = sin (TWOPI * (float) i / (float) L)

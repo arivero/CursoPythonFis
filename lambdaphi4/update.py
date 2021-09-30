@@ -1,20 +1,23 @@
-#include "lambda.h"
+from configlambda import *
+from mainlambda import
+  irr,
+  ir1,  ### PELIGROSO, INMUTABLE,
+  ind,ig1,ig2,ig3, ### PELIGRO, INMUTABLES
+  phi,
+  good,cons, #PELIGRO, INMUTABLES
+  datos,
+  pointer #PELIGRO, INMUTABLE
 
-#
 
-Metropolis (j)		#  algoritmo de Metropolis 
-  precision delta_S, prob, r
-  precision Accion_new, Accion_old, modulo
-
-  precision Staple, uold, unew, variacion
+def Metropolis (j):		#  algoritmo de Metropolis 
+  #precision delta_S, prob, r
+  #precision Accion_new, Accion_old, modulo
+  #precision Staple, uold, unew, variacion
 
   uold = phi[j]
 
   Staple = datos.Kappa * (phi[j + neigh[0]] + phi[j + neigh[1]] +
-			  phi[j + neigh[2]] + phi[j + neigh[3]] + phi[j +
-								      neigh
-								      [4]] +
-			  phi[j + neigh[5]])
+			  phi[j + neigh[2]] + phi[j + neigh[3]] + phi[j + neigh [4]] + phi[j + neigh[5]])
 
   modulo = uold * uold
 

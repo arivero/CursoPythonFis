@@ -1,9 +1,18 @@
-#include "lambda.h"
+from configlambda import *
+from mainlambda import
+  phi,
+  co,si,
+  obs,
+  x_p[],y_p[],z_p[],
+  x_m[],y_m[],z_m[],
+  datos,
+  name_evol
 
+neigh = [0]*(2*Dim)
 
+def Medida():
 
-  precision magne, u1, Staple, Staple_m
-
+  #precision magne, u1, Staple, Staple_m
 
   sit = 0
   energia_c = energia_2 = energia_4 = 0.
