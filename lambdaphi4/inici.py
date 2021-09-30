@@ -1,8 +1,8 @@
 from lambdaconfig import *
 
-from mainlambda import
-  x_p[],y_p[],z_p[],
-  x_m[],y_m[],z_m[],
+from mainlambda import \
+  x_p,y_p,z_p,
+  x_m,y_m,z_m,
   phi,
   co,si,
   datos
@@ -29,10 +29,10 @@ def Inicializa(semilla, flag):
 
   if flag < 2:
       for igen in range(0, V):
-	if flag == 0:
-	  phi[igen] = RAN () * datos.delta * 4.
-	else:
-	  phi[igen] = 1.0
+        if flag == 0:
+          phi[igen] = RAN () * datos.delta * 4.
+        else:
+          phi[igen] = 1.0
 
 def table():
   for i in range(L):

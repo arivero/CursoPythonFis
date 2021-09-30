@@ -1,22 +1,17 @@
 from configlambda import *
-from mainlambda import
-  dir,
-  phi,
-  v_dat,
-  datos
+from mainlambda import dir, phi, v_dat, datos
 
 #en C: otros_datos[N_OTROS+1]={N_OTROS,L,L,L}
 otros_datos = [N_OTROS, L,L,L]
 
 def tiempo ():
-  static time1 = 0, time2
-
+  time1 = 0
   time2 = time (NULL)
   if time1 > 0:
     printf ("%4ds:" % (time2 - time1))
   time1 = time2
 
-def pinta_datos (dat):	# solo para debug 
+def pinta_datos (dat):  # solo para debug 
   printf ("itmax  %ld \n" % (dat.itmax))
   printf ("mesfr  %ld \n" % (dat.mesfr))
   printf ("nbin   %ld \n" % (dat.nbin))
@@ -29,7 +24,7 @@ def pinta_datos (dat):	# solo para debug
 
 
 def leedatos(i):
-  sprintf (name, "%s.%i" % ("input", i)
+  sprintf (name, "%s.%i" % ("input", i))
   name=['']*(LPATH+12)
   dummy=['']*LPATH
   Finput = fopen (name, "rt")
@@ -60,18 +55,18 @@ def leedatos(i):
       printf (" itmax > %i\a\n" % (maxit))
       exit (0)
   datos.seed += addrandom
-  if datos.flag < 2:	# existe outxxx.dat o conf. ? 
+  if datos.flag < 2:    # existe outxxx.dat o conf. ? 
       sprintf (name, "%s%s%03ld.%i" % (dir, "OUT", datos.itcut, i)
       Foutput = fopen (name, "rb")
       if Foutput != NULL:
-	  fclose (Foutput)
-	  printf (" %s  ya existe.\a\n" % (name))
+          fclose (Foutput)
+          printf (" %s  ya existe.\a\n" % (name))
       sprintf (name, "%s%s.%i" % (dir, "conf", i)
 
       Foutput = fopen (name, "rb")
       if Foutput != NULL:
-	  fclose (Foutput)
-	  printf (" %s  ya existe.\a\n" % (name))
+          fclose (Foutput)
+          printf (" %s  ya existe.\a\n" % (name))
 
 def lee_conf(i):
   sprintf (name, "%s%s.%i" % (dir, "conf", i)
@@ -89,8 +84,8 @@ def lee_conf(i):
       exit (1)
   for j in range(otros_datos[0]+1):
     if otros_datosb[j] != otros_datos[j]:
-	printf ("La configuracion no es compatible con este programa.\n")
-	exit (1)
+        printf ("La configuracion no es compatible con este programa.\n")
+        exit (1)
   fread (phi, sizeof (phi[0]), V, Fconfig)
   if DEBUG:
     pinta_datos (&datosb)
@@ -106,8 +101,8 @@ def lee_conf(i):
 
       Foutput = fopen (name, "rb")
       if Foutput != NULL:
-	  fclose (Foutput)
-	  printf (" %s  ya existe.\a\n" % (name))
+          fclose (Foutput)
+          printf (" %s  ya existe.\a\n" % (name))
   else:
       datos.itcut = datosb.itcut
       datos.seed = datosb.seed
