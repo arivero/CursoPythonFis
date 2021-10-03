@@ -1,19 +1,19 @@
-from lambdaconfig import *
+from configlambda import *
 
 from mainlambda import \
-  x_p,y_p,z_p,
-  x_m,y_m,z_m,
-  phi,
-  co,si,
+  x_p,y_p,z_p, \
+  x_m,y_m,z_m, \
+  phi, \
+  co,si, \
   datos
 
 def Direccionamientos():
   for i in range(L):
       x_p[i] = 1
       x_m[i] = -1
-      y_p[i] = L
+      y_p[i] = L  #Lx
       y_m[i] = -L
-      z_p[i] = L * L
+      z_p[i] = L * L  #Lx * Ly
       z_m[i] = -L * L
 
   x_m[0] = L - 1
@@ -25,8 +25,7 @@ def Direccionamientos():
 
 
 def Inicializa(semilla, flag):
-  srand (semilla)
-
+  srand (semilla)   #semilla a partir del sistema
   if flag < 2:
       for igen in range(0, V):
         if flag == 0:
@@ -36,5 +35,5 @@ def Inicializa(semilla, flag):
 
 def table():
   for i in range(L):
-      co[i] = cos (TWOPI * (float) i / (float) L)
-      si[i] = sin (TWOPI * (float) i / (float) L)
+      co[i] = cos (TWOPI *  i /  L)
+      si[i] = sin (TWOPI *  i /  L)

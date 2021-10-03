@@ -1,7 +1,6 @@
 from configlambda import * 
 dir=['']*LPATH #root
-irr=[0]*256 #unsigned irr[256] #update
-#unsigned ind, ig1, ig2, ig3 #update INMUTABLE SOLO SE PONEN A CERO EN INIT
+from aleatorio import reseed
 
 phi=[precision()]*V #inici medidas rrot update
 x_p,y_p,z_p= [[0]*L,[0]*L,[0]*L]
@@ -18,10 +17,10 @@ name_evol=['']*(LPATH + 12) #medidas
 #name_obs[n_ope][256] = { "E_c", "E2", "E4", "M", "F", "SD"
 
 if __name__ == '__main__':
-    from root import lee_datos, lee_conf, escribe_medidas, escribe_conf, tiempo 
+    from root import lee_datos, lee_conf, escribe_medidas, tiempo #falta escribe_conf
     from inici import table, Direccionamientos, Inicializa
     from update import Metropolis
-    from medida import Medida
+    from medidas import Medida
     from mainlambda import *
     #el bloque "compartido"
 def main ():
@@ -35,8 +34,8 @@ def main ():
     lee_conf (0)
   cons = float( V *datos.mesfr * datos.itmax * nhit)
 
-  Inicializa (datos.seed, datos.flag)
-  srand (int( datos.seed) )
+  Inicializa (datos.seed, datos.flag) #phi
+  reseed (int( datos.seed) ) #
   if EVOL:
     sprintf (name_evol, "%s%s" % (dir, "evol.dat"))
     try:
@@ -45,14 +44,9 @@ def main ():
     except:
       printf ("Error abriendo fichero %s\n" % (name_evol))
       exit (1)
-  for i in range(256):
-      low = rand ()
-      high = rand ()
-      irr[i] = low ^ (high << 16)
-  ind = ig1 = ig2 = ig3 = 0
 
   for ibin in range(datos.itcut, datos.nbin):   #loop en numero de bloques 
-      srand (int(datos.seed))   # asi se reproduce la misma secuencia que cuando se lee de un backup              
+      #srand (int(datos.seed))   # queremos reproducir la misma secuencia que cuando se lee de un backup, ¿basta reseed?             
       for iop in range(0, n_obs):
          temp[iop] = 0
 
@@ -96,7 +90,7 @@ def main ():
 
       escribe_medidas (ibin, 0)
 
-      datos.seed = rand ()
+      datos.seed = rand () 
       #datos.delta=delta 
       datos.itcut = ibin + 1
       escribe_conf (0)

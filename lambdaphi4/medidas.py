@@ -1,11 +1,11 @@
 from configlambda import *
 from mainlambda import \
-  phi,
-  co,si,
-  obs,
-  x_p[],y_p[],z_p[],
-  x_m[],y_m[],z_m[],
-  datos,
+  phi, \
+  co,si, \
+  obs, \
+  x_p,y_p,z_p, \
+  x_m,y_m,z_m, \
+  datos, \
   name_evol
 
 neigh = [0]*(2*Dim)
@@ -49,6 +49,7 @@ def Medida():
 
               Staple_m = Staple + phi[sit0] + phi[sit2] + phi[sit4]
 
+              #Schwinger-Dyson eq:
               SD += exp (-2.0 * datos.Kappa * u1 * Staple_m)
 
 
@@ -71,6 +72,9 @@ def Medida():
             RCZ * RCZ + RSZ * RSZ) * Normamag / 3.0
   obs[5] = SD * Normamag
 
+
+  #este append quizas no sea necesario en cada medida. Considerar
+  #por ejemplo transportandolo al principal y decidiendo ahi
   ev = fopen (name_evol, "at")
 
   for x in range(0, n_ope):
