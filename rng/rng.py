@@ -52,3 +52,22 @@ def rngnpD():
     irrnp[ig[0]] = np.add(irrnp[ig[1]] , irrnp[ig[2]])
     ir1 = (irrnp[ig[0]] ^ irrnp[ig[3]])
     return ir1 * NormRANu
+from numba import njit
+@njit()
+def rngJit(ig,irrnp):
+    ig[1] = (ig[0] - 24) 
+    ig[2] = (ig[0] - 55 )
+    ig[3] = (ig[0] - 61) 
+    irrnp[ig[0]] = irrnp[ig[1]] + irrnp[ig[2]]
+    ir1 = (irrnp[ig[0]] ^ irrnp[ig[3]])
+    ig[0] = (ig[0]+1 )
+    return ir1 * NormRANu
+@njit()
+def rngJitB(ig1,ig2,ig3,ind,irr):
+    ig1 = (ind - 24) & 255
+    ig2 = (ind - 55 ) & 255
+    ig3 = (ind - 61) & 255
+    irr[ind] = (irr[ig1] + irr[ig2] )#& 4294967295 
+    ir1 = (irr[ind] ^ irr[ig3])
+    ind = (ind+1 )& 255
+    return ir1 * NormRANu
