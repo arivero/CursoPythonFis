@@ -4,8 +4,9 @@ nhit    = 3             # numero de hits de Metropolis
 maxit   = 1000          # maximo de medidas cada escritura     
 #*************************************************************************
 DEBUG= False #*escribe en pantalla mas informacion */
-EVOL=True
+EVOL=False
 LINUX=True
+IO=False
 
 L       = 8     #makefile? como lo pondriamos?
 Dim     = 3

@@ -18,7 +18,7 @@ def tiempo ():
   global time1
   time2 = time ()
   if time1 > 0:
-    print ("%4ds:" % (time2 - time1))
+    print ("%4ds:" % (time2 - time1), end='')
   time1 = time2
 
 def pinta_datos (dat):  # solo para debug 

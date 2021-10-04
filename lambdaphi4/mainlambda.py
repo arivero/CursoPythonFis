@@ -3,8 +3,8 @@ import os.path
 localdir=""
 from aleatorio import reseed
 import random
-
-phi=[precision()]*V #inici medidas rrot update
+import numpy as np
+phi=np.empty([V], dtype=np.dtype(float) ) #inici medidas rrot update
 x_p,y_p,z_p= [[0]*L,[0]*L,[0]*L]
 x_m,y_m,z_m= [[0]*L,[0]*L,[0]*L]
 
@@ -55,7 +55,7 @@ def main ():
   for ibin in range(datos.itcut, datos.nbin):   #loop en numero de bloques 
       #srand (int(datos.seed))   # queremos reproducir la misma secuencia que cuando se lee de un backup, ¿basta reseed? 
       temp = [0]*n_obs
-      neigh= [0]*(2*Dim)
+      neigh= np.zeros([2*Dim],dtype=np.dtype(int))
 
       good = 0.0
 
@@ -102,12 +102,14 @@ def main ():
         print ("%s=%+5.3f " % (name_obs[x], temp[x]), end='')
       print ()
 
-      escribe_medidas (ibin, 0)
+      if IO:
+            escribe_medidas (ibin, 0)
 
       datos.seed = random.randrange(2**32) 
       #datos.delta=delta 
       datos.itcut = ibin + 1
-      escribe_conf (0)
+      if IO:
+          escribe_conf (0)
   # Fin for datos.nbin 
   return 1
 
