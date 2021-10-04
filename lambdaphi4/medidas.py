@@ -5,15 +5,14 @@ from mainlambda import \
   obs, \
   x_p,y_p,z_p, \
   x_m,y_m,z_m, \
-  datos, \
-  name_evol
+  datos
+from math import exp
 
-neigh = [0]*(2*Dim)
 
 def Medida():
 
   #precision magne, u1, Staple, Staple_m
-
+  neigh = [0]*(2*Dim)
   sit = 0
   energia_c = energia_2 = energia_4 = 0.
   magne = 0.0
@@ -71,15 +70,4 @@ def Medida():
   obs[4] = (RCX * RCX + RSX * RSX + RCY * RCY + RSY * RSY +
             RCZ * RCZ + RSZ * RSZ) * Normamag / 3.0
   obs[5] = SD * Normamag
-
-
-  #este append quizas no sea necesario en cada medida. Considerar
-  #por ejemplo transportandolo al principal y decidiendo ahi
-  ev = fopen (name_evol, "at")
-
-  for x in range(0, n_ope):
-    fprintf (ev, "%lf " % (obs[x]))
-  fprintf (ev, "\n")
-
-  fclose (ev)
 

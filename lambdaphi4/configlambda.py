@@ -21,15 +21,14 @@ twopi   = 6.283185307
 N_OTROS = 3
 
 precision       = float
-N_DATOS_INT = 6
-N_DATOS_FLOAT   = 3
 
 
 NormRAN = float(4.656612595521636e-10)
 NormRANu= float(0.5*4.656612595521636e-10)
 
+import random
 def RAN():
-    return float (rand() * NormRAN )
+    return random.randrange(2**32) * NormRAN 
 
 Normaener       = float(1.0/ (V*Dim))
 Normamag        =  float(1.0/ V)

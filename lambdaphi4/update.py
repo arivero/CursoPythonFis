@@ -5,8 +5,9 @@ from mainlambda import \
 import mainlambda as mainvars
   #good,cons, #PELIGRO, INMUTABLES pointer #PELIGRO, INMUTABLE
 from aleatorio import rng
+from math import exp
 
-def Metropolis (j):             #  algoritmo de Metropolis 
+def Metropolis (j,neigh):             #  algoritmo de Metropolis 
   #precision delta_S, prob, r
   #precision Accion_new, Accion_old, modulo
   #precision Staple, uold, unew, variacion

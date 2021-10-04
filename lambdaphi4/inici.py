@@ -7,6 +7,9 @@ from mainlambda import \
   co,si, \
   datos
 
+from math import cos, sin
+import random
+
 def Direccionamientos():
   for i in range(L):
       x_p[i] = 1
@@ -25,7 +28,7 @@ def Direccionamientos():
 
 
 def Inicializa(semilla, flag):
-  srand (semilla)   #semilla a partir del sistema
+  random.seed(a=semilla)   #semilla a partir del sistema
   if flag < 2:
       for igen in range(0, V):
         if flag == 0:

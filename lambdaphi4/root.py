@@ -1,8 +1,12 @@
 from configlambda import *
-from mainlambda import dir, phi, v_dat, datos
+import mainlambda
+from mainlambda import  phi, v_dat, datos
+from pathlib import Path
 
 #en C: otros_datos[N_OTROS+1]={N_OTROS,L,L,L}
 otros_datos = [N_OTROS, L,L,L]
+
+#nota sobre io: python no tiene scanf. Se recomienda usar split o expresiones regulares
 
 from time import time
 time1 = time()
@@ -26,47 +30,43 @@ def pinta_datos (dat):  # solo para debug
 
 
 def lee_datos(i):
-  name= "%s.%i" % ("input", i)
-  dummy="".join(['']*LPATH) #????
-  Finput = fopen (name, "rt")
-
-  if Finput == None:
-      Finput = fopen ("input", "rt")
+  global dirname
+  name= Path( "%s.%i" % ("input", i) ) 
+  if not name.exists():
+      name= Path("input")
       addrandom = i * 13
       print ("'%s' no existe, usando 'input'" % (name))
   else:
     addrandom = 0
-
-  if Finput == None:
+  if not name.exists():
       print (" No existe el fichero '%s'" % (name))
       exit (0)
-  fscanf (Finput, "%s %s" % (dir, dummy))
-
-  ptdatos_int = datos.itmax
-  for ptdatos_int in range(datos.itmax,  datos.itmax+N_DATOS_INT):
-    fscanf (Finput, "%ld %s" % (ptdatos_int, dummy))
-  
-  for ptdatos_real in range( datos.Kappa, datos.Kappa + N_DATOS_FLOAT):
-    fscanf (Finput, "%f %s" % (ptdatos_real, dummy))
-  fclose (Finput)
-  if DEBUG:
+  with name.open("rt") as Finput:
+    dirname,_ = Finput.readline().split()
+    mainlambda.localdir=dirname
+    datos.itmax=int(Finput.readline().split()[0])
+    datos.mesfr=int(next(Finput).split()[0])                   
+    datos.nbin=int(next(Finput).split().pop(0))                            
+    datos.itcut=int(Finput.readline().split()[0])            
+    datos.flag=int(Finput.readline().split().pop(0))
+    datos.seed=int(Finput.readline().split()[0])                               
+    datos.Kappa=float(Finput.readline().split()[0])        
+    datos.Lambda=float(Finput.readline().split()[0])         
+    datos.delta=float(Finput.readline().split()[0]) 
+  #fclose (Finput)
+  if True: #DEBUG:
     pinta_datos (datos)
   if datos.itmax > maxit:
-      printf (" itmax > %i\a\n" % (maxit))
+      print (" itmax > %i\a" % (maxit))
       exit (0)
   datos.seed += addrandom
   if datos.flag < 2:    # existe outxxx.dat o conf. ? 
-      sprintf (name, "%s%s%03ld.%i" % (dir, "OUT", datos.itcut, i))
-      Foutput = fopen (name, "rb")
-      if Foutput != NULL:
-          fclose (Foutput)
-          printf (" %s  ya existe.\a\n" % (name))
-      sprintf (name, "%s%s.%i" % (dir, "conf", i))
-
-      Foutput = fopen (name, "rb")
-      if Foutput != NULL:
-          fclose (Foutput)
-          printf (" %s  ya existe.\a\n" % (name))
+      name = Path( "%s%s%03ld.%i" % (dir, "OUT", datos.itcut, i))
+      if name.exists():
+          printf (" %s  ya existe.\a" % (name))
+      name = Path( "%s%s.%i" % (dir, "conf", i))
+      if name.exists():
+          printf (" %s  ya existe.\a" % (name))
 
 def lee_conf(i):
   sprintf (name, "%s%s.%i" % (dir, "conf", i))
