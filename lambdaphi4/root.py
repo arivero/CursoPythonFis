@@ -2,6 +2,10 @@ from configlambda import *
 import mainlambda
 from mainlambda import  phi, v_dat, datos
 from pathlib import Path
+import shelve
+import dataclasses
+import struct
+import array
 
 #en C: otros_datos[N_OTROS+1]={N_OTROS,L,L,L}
 otros_datos = [N_OTROS, L,L,L]
@@ -33,9 +37,9 @@ def lee_datos(i):
   global dirname
   name= Path( "%s.%i" % ("input", i) ) 
   if not name.exists():
-      name= Path("input")
       addrandom = i * 13
       print ("'%s' no existe, usando 'input'" % (name))
+      name= Path("input")
   else:
     addrandom = 0
   if not name.exists():
@@ -69,6 +73,8 @@ def lee_datos(i):
           printf (" %s  ya existe.\a" % (name))
 
 def lee_conf(i):
+  #TODO (estamos pendientes de decidir el formato de la conf)
+  #leer una shelf puede ejecutar codigo arbitrario :-( 
   sprintf (name, "%s%s.%i" % (dir, "conf", i))
 
   Fconfig = fopen (name, "rb")
@@ -108,29 +114,49 @@ def lee_conf(i):
   fclose (Fconfig)
 
 def escribe_medidas(i,t):
+  global dirname
+  name=Path ( "%s%s%03d.DAT" % (dirname, "OUT", i))
 
-  sprintf (name, "%s%s%03d.DAT" % (dir, "OUT", i))
+  with name.open ("wb") as Foutput:
+      #fwrite (datos, sizeof (datos), 1, Foutput)
+      #fwrite (otros_datos, sizeof (otros_datos), 1, Foutput)
+      for idat in range(0, n_obs):
+        k=array.array('f') 
+        k.fromlist(v_dat[idat])
+        Foutput.write(k.tobytes())
+      #  fwrite (v_dat[idat][0], 4 * datos.itmax, 1, Foutput)
+  with shelve.open(str(name)+".shelf") as shelf:
+    shelf["datos"]=datos
+    shelf["otros_datos"]=otros_datos
+    shelf["v_dat"]=v_dat
 
-  Foutput = fopen (name, "wb")
-  fwrite (datos, sizeof (datos), 1, Foutput)
-  fwrite (otros_datos, sizeof (otros_datos), 1, Foutput)
-  for idat in range(0, n_obs):
-    fwrite (v_dat[idat][0], 4 * datos.itmax, 1, Foutput)
-  fclose (Foutput)
 
+def escribe_conf(i):
+  name_dollar= Path( "%s%s" % (dirname, "conf.$$$"))
+  name=Path ("%s%s.%i" % (dirname, "conf", i))
+  name_old=Path ("%s%s.%i" % (dirname, "confold", i))
 
-  sprintf (name_dollar, "%s%s" % (dir, "conf.$$$"))
-  sprintf (name, "%s%s.%i" % (dir, "conf", i))
-  sprintf (name_old, "%s%s.%i" % (dir, "confold", i))
-
-  Fconfig = fopen (name_dollar, "wb")
-  fwrite (datos, sizeof (datos), 1, Fconfig)
   if DEBUG:
-    pinta_datos (datos)
-  fwrite (otros_datos, sizeof (otros_datos), 1, Fconfig)
-  fwrite (phi, sizeof (phi[0]), V, Fconfig)
-
-  fclose (Fconfig)
-  remove (name_old)
-  rename (name, name_old)
-  rename (name_dollar, name)
+        pinta_datos (datos)
+    
+  with name_dollar.open ("wb") as Fconfig:
+      for field in dataclasses.fields(datos):
+            if field.type==int:
+                tipo='I' #unsigned 
+            else:
+                tipo='f' #float 4 bits
+            Fconfig.write(struct.pack(tipo,datos.__dict__[field.name]))
+      Fconfig.write(struct.pack('iiii',*otros_datos))
+      k=array.array('d')
+      k.fromlist(phi)
+      Fconfig.write(k.tobytes())
+  with shelve.open(str(name_dollar)+".shelf") as shelf:
+    shelf["datos"]=datos
+    shelf["otros_datos"]=otros_datos
+    shelf["phi"]=phi
+  
+  if name.exists():
+      if name_old.exists():
+          name_old.unlink() #equivale a os.remove
+      name.rename(name_old)
+  name_dollar.rename(name)

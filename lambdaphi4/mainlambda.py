@@ -2,7 +2,7 @@ from configlambda import *
 import os.path
 localdir=""
 from aleatorio import reseed
-
+import random
 
 phi=[precision()]*V #inici medidas rrot update
 x_p,y_p,z_p= [[0]*L,[0]*L,[0]*L]
@@ -19,7 +19,7 @@ name_evol=None #medidas
 name_obs = ["E_c", "E2", "E4", "M", "F", "SD"]
 
 if __name__ == '__main__':
-    from root import lee_datos, lee_conf, escribe_medidas, tiempo #falta escribe_conf
+    from root import lee_datos, lee_conf, escribe_medidas, escribe_conf, tiempo 
     from inici import table, Direccionamientos, Inicializa
     from update import Metropolis
     from medidas import Medida
@@ -104,7 +104,7 @@ def main ():
 
       escribe_medidas (ibin, 0)
 
-      datos.seed = RAN() #TODO: Revisar las semillas, para repetir exacto. ESTA NO ES 
+      datos.seed = random.randrange(2**32) 
       #datos.delta=delta 
       datos.itcut = ibin + 1
       escribe_conf (0)

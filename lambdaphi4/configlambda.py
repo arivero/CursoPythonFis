@@ -40,13 +40,16 @@ n_obs   = n_ope
 
 LPATH   = 100
 
-class s_datos:
-  itmax=0       # Numero de medidas por bloque                  
-  mesfr=0       # frecuencia de las medidas                     
-  nbin=0        # numero de bloque                              
-  itcut=0       # proximo bloque a calcular                     
-  flag=0        # conf de partida: 0(random), 1(fria),2(backup) 
-  seed=0        # semilla random                                
-  Kappa= 0.0 # acoplamientos           
-  Lambda=0.0    # acoplamientos           
-  delta=0.0     # salto de Metropolis     
+from dataclasses import dataclass
+
+@dataclass
+class s_datos():
+  itmax:int = 0       # Numero de medidas por bloque                  
+  mesfr:int=0       # frecuencia de las medidas                     
+  nbin:int=0        # numero de bloque                              
+  itcut:int=0       # proximo bloque a calcular                     
+  flag:int=0        # conf de partida: 0(random), 1(fria),2(backup) 
+  seed:int=0        # semilla random                                
+  Kappa:float= 0.0 # acoplamientos           
+  Lambda:float=0.0    # acoplamientos           
+  delta:float=0.0     # salto de Metropolis     
