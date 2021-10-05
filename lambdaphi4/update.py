@@ -8,9 +8,16 @@ import aleatorio as alea
 from math import exp
 from numba import njit
 
-def Metropolis (j,neigh): 
-    #return #3 segundos hasta aqui, 7-8 segundos hasta el final
-    MetropolisJIT(phi,j,neigh,datos.Kappa,datos.Lambda, datos.delta, mainvars.good, alea.irr)
+
+#punto de entrada al compilador, tiene que pasar todo lo que no sean constantes o tipos que no reconozca
+def MetropolisUpdateAll(neigh,n=1):
+  compiledUpdateAll(neigh,n,phi,datos.Kappa,datos.Lambda, datos.delta, mainvars.good, alea.irr)
+
+@njit
+def compiledUpdateAll(neigh,n,phi, Kappa, Lambda, delta,good, irr  ):
+  for _ in range(n):
+    for site in range(L*L*L):
+      MetropolisJIT(phi,site,neigh[site],Kappa,Lambda, delta, good, irr)
 
 @njit()
 def MetropolisJIT (phi,j,neigh, Kappa, Lambda, delta,good, irr):             #  algoritmo de Metropolis 

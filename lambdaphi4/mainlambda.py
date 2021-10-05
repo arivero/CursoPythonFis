@@ -21,7 +21,7 @@ name_obs = ["E_c", "E2", "E4", "M", "F", "SD"]
 if __name__ == '__main__':
     from root import lee_datos, lee_conf, escribe_medidas, escribe_conf, tiempo 
     from inici import table, Direccionamientos, Inicializa
-    from update import Metropolis
+    from update import MetropolisUpdateAll
     from medidas import Medida
     #el bloque compartido no es lo mismo que el bloque __main__
     import mainlambda
@@ -71,14 +71,10 @@ def main ():
       good = 0.0
 
       for it in range(datos.itmax):
-          for j in range(0, datos.mesfr):       #loop de MonteCarlo sin medidas
-              for site in range(L*L*L):
-                Metropolis (site,neigh[site])
-          # Fin for datos.mesfr 
-          
-          #si aqui hacemos un continue, bajamos de a 10s a 8 s por ibin Lo critico es Metropolis 
+          #realizando todo en el update se evita el overhead de traduccion de variables
+          MetropolisUpdateAll(neigh,datos.mesfr)
 
-          #Ajustadelta(cons,good) 
+          #esta version no tienes Ajustadelta(cons,good) #aunque aun tenemos la variable good 
           Medida ()
           #este append quizas no sea necesario tras cada medida. 
           #necesitamos una decisicion 
