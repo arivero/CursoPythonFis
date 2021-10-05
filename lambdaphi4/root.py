@@ -147,9 +147,9 @@ def escribe_conf(i):
                 tipo='f' #float 4 bits
             Fconfig.write(struct.pack(tipo,datos.__dict__[field.name]))
       Fconfig.write(struct.pack('iiii',*otros_datos))
-      k=array.array('d')
-      k.fromlist(phi)
-      Fconfig.write(k.tobytes())
+      #k=array.array('d')
+      #k.fromlist(phi)
+      Fconfig.write(phi.tobytes())
   with shelve.open(str(name_dollar)+".shelf") as shelf:
     shelf["datos"]=datos
     shelf["otros_datos"]=otros_datos

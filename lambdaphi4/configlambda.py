@@ -6,7 +6,7 @@ maxit   = 1000          # maximo de medidas cada escritura
 DEBUG= False #*escribe en pantalla mas informacion */
 EVOL=False
 LINUX=True
-IO=False
+IO=True
 
 L       = 8     #makefile? como lo pondriamos?
 Dim     = 3
