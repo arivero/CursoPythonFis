@@ -50,30 +50,33 @@ def main ():
       exit (1)
   else:
     name_evol= None
-    
-
+  #vamos a gastar RAM que es gratis. Esto tambien podriamos haberlo hecho en C, claro. Tampoco mejora casi nada.
+  neigh= np.zeros([L*L*L,2*Dim],dtype=np.dtype(int))
+  site=0
+  for z in range(L):
+    for y in range(L):
+      for x in range(L):
+        neigh[site,5] = z_p[z]
+        neigh[site,4] = z_m[z]
+        neigh[site,3] = y_p[y]
+        neigh[site,2] = y_m[y]
+        neigh[site,1] = x_p[x]
+        neigh[site,0] = x_m[x]
+        site += 1
   for ibin in range(datos.itcut, datos.nbin):   #loop en numero de bloques 
       #srand (int(datos.seed))   # queremos reproducir la misma secuencia que cuando se lee de un backup, ¿basta reseed? 
       temp = [0]*n_obs
-      neigh= np.zeros([2*Dim],dtype=np.dtype(int))
+      
 
       good = 0.0
 
       for it in range(datos.itmax):
-          for j in range(0, datos.mesfr):       #loop de MonteCarlo sin medidas 
-              site = 0
-              for z in range(L):
-                  neigh[5] = z_p[z]
-                  neigh[4] = z_m[z]
-                  for y in range(L):
-                      neigh[3] = y_p[y]
-                      neigh[2] = y_m[y]
-                      for x in range(L):
-                          neigh[1] = x_p[x]
-                          neigh[0] = x_m[x]
-                          Metropolis (site,neigh)
-                          site += 1
+          for j in range(0, datos.mesfr):       #loop de MonteCarlo sin medidas
+              for site in range(L*L*L):
+                Metropolis (site,neigh[site])
           # Fin for datos.mesfr 
+          
+          #si aqui hacemos un continue, bajamos de a 10s a 8 s por ibin Lo critico es Metropolis 
 
           #Ajustadelta(cons,good) 
           Medida ()
