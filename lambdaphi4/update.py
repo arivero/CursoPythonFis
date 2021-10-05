@@ -9,8 +9,10 @@ from math import exp
 from numba import njit
 
 def Metropolis (j,neigh): 
+    #return 3 seg
     r1=rng()#no es facil llamar a rng que no esta compilada
     r2=rng()#esto es perder otro par de segundos
+    #return 7 seg
     MetropolisJIT(phi,j,neigh,datos.Kappa,datos.Lambda, datos.delta, mainvars.good,r1,r2)
 
 @njit()
@@ -18,13 +20,13 @@ def MetropolisJIT (phi,j,neigh, Kappa, Lambda, delta,good,r1,r2):             # 
   #precision delta_S, prob, r
   #precision Accion_new, Accion_old, modulo
   #precision Staple, uold, unew, variacion
-
+  #return #10-11 segundos hasta aqui, 11-12 segundos hasta el final
   uold = phi[j]
 
   Staple = Kappa * (phi[j + neigh[0]] + phi[j + neigh[1]] + phi[j + neigh[2]] 
                     + phi[j + neigh[3]] + phi[j + neigh [4]] + phi[j + neigh[5]])
 
-  modulo = uold * uold
+  modulo = uold  * uold
 
   Accion_old = uold * Staple - modulo - Lambda * modulo * modulo
 
