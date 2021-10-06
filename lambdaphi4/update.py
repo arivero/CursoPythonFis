@@ -8,6 +8,11 @@ import aleatorio as alea
 from math import exp
 from numba import njit
 
+##see also:
+##https://stackoverflow.com/questions/54763690/speed-up-metropolis-hastings-in-python
+##https://laurentperrinet.github.io/sciblog/posts/2017-09-20-the-fastest-2d-convolution-in-the-world.html
+
+
 
 #punto de entrada al compilador, tiene que pasar todo lo que no sean constantes o tipos que no reconozca
 def MetropolisUpdateAll(neigh,n=1):
@@ -27,6 +32,7 @@ def MetropolisJIT (phi,j,neigh, Kappa, Lambda, delta,good, irr):             #  
   #return #6-7 segundos hasta aqui, 7-8 segundos hasta el final: el peso esta en el overhead de la llamada
   uold = phi[j]
 
+  ###esto podria ser perfectamente un scipy.ndimage.correlate con un kernel de unos.
   Staple = Kappa * (phi[j + neigh[0]] + phi[j + neigh[1]] + phi[j + neigh[2]] 
                     + phi[j + neigh[3]] + phi[j + neigh [4]] + phi[j + neigh[5]])
 

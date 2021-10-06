@@ -41,8 +41,10 @@ n_obs   = n_ope
 
 LPATH   = 100
 
-from dataclasses import dataclass
+##dataclass es una de las ideas nuevas de python
+##aunque por el mismo precio se podria usar un named dict
 
+from dataclasses import dataclass
 @dataclass
 class s_datos():
   itmax:int = 0       # Numero de medidas por bloque                  
@@ -54,3 +56,6 @@ class s_datos():
   Kappa:float= 0.0 # acoplamientos           
   Lambda:float=0.0    # acoplamientos           
   delta:float=0.0     # salto de Metropolis     
+
+##la idea similar en numpy es definir un tipo "estructurado" nuevo.
+
