@@ -32,7 +32,7 @@ def MetropolisJIT (phi,j,neigh, Kappa, Lambda, delta,good, irr):             #  
   #return #6-7 segundos hasta aqui, 7-8 segundos hasta el final: el peso esta en el overhead de la llamada
   uold = phi[j]
 
-  ###esto podria ser perfectamente un scipy.ndimage.correlate con un kernel de unos.
+  ###esto podria ser perfectamente un scipy.ndimage.correlate con un kernel de unos y ceros.
   Staple = Kappa * (phi[j + neigh[0]] + phi[j + neigh[1]] + phi[j + neigh[2]] 
                     + phi[j + neigh[3]] + phi[j + neigh [4]] + phi[j + neigh[5]])
 
