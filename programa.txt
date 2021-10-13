@@ -1,0 +1,107 @@
+Métodos matemáticos y computacionales en cosmología, astrofísica y física de partículas. 
+Módulo de programación en Python.
+Presentación del módulo
+Lugar: Aula AI1, de 12 a 14
+
+
+ Oct 19 20 : instalación e inicio del primer bloque
+ Oct 26 27: segundo bloque
+ Nov 9 10: resto del primer bloque
+ Nov 16 17: tercer bloque
+ Nov 23 y 24: cuarto bloque
+
+
+Total 10 clases de 2 horas = 20 horas. 
+
+
+Entorno de trabajo del curso
+Linux preferentemente (alternativamente OSX o Windows)
+Python integrado via Anaconda3 Versión 2021 actualizada (Jupiter_Lab>3.1)
+
+
+Evaluación
+
+
+La calificación del alumno se obtendrá en base a la actividad durante el curso y a una prueba final de conocimientos adquiridos, del siguiente modo:
+* Valoración de informes y trabajos escritos: proceso de aprendizaje en clase: compuesta de actividad diaria + mini trabajo a entregar el 9 de Nov "por escrito". (40% de la nota)
+* Valoración de análisis de casos, resolución de problemas y evaluación del trabajo computacional por medio de la realización de un trabajo a presentar oralmente tras la finalización del módulo. (60% de la nota) 
+
+
+ 
+
+
+________________
+
+
+Programa
+
+
+Las partes prácticas del módulo pivotan sobre dos ejercicios de Runge Kutta y de Montecarlo, es decir, el problema de n cuerpos y  𝝺𝝓⁴. Estas prácticas centran el segundo y tercer bloque. En el desarrollo, por motivos didácticos y de calendario, el segundo bloque se intercalará con el primero.
+
+
+* Primer bloque: lenguaje (Python > 3.6) 
+   * Introducción al entorno
+      * instalación (anaconda, jupyter, numba, clang)
+      * ejecución desde notebook en el navegador 
+      * ejecución desde consola
+   * Introducción al lenguaje
+      * Notación básica. Formatos de output.
+      * Datos. Tipos de datos. 
+         * integer, float, precisión arbitraria, complejos
+         * strings y bytes
+      * Sintaxis: funciones, procedimientos, bloques, operadores
+         * lambdas
+         * inline if
+      * agrupaciones: diccionarios, listas, conjuntos
+      * iteradores y operaciones sobre iteradores: (zip, [], itertools…)
+         * generadores
+      * clases y objetos
+      * creación e importación de librerías (módulos)
+      * lectura y escritura de ficheros
+         * ficheros CSV con pandas
+   * Entorno avanzado
+      * ejecución desde línea de comandos
+      * parámetros desde línea de comandos. Función Raw_input
+      * matplotlib en jupyter y en salida a ficheros (png, jpg &c)
+      * lenguaje avanzado
+* Segundo bloque: librerías numéricas e Integradores numéricos
+   * scipy/numpy
+      * arrays numéricos, subíndices, selectores
+      * manipulaciones principales de numpy. Vectorización y broadcasting
+      * sub librerias (modulos) de scipy
+   * integradores numéricos y ODEs
+      * Integradores en scipy.integrate
+      * Integradores ad-hoc con introducción teórica
+      * Runge-Kutta en scipy.integrate
+      * Cálculo de un sistema planetario ("problema de n cuerpos")
+* Tercer bloque: programación científica avanzada y Monte Carlo
+   * Código mixto python-C para optimizar procesos
+   * generadores aleatorios y utilidades estadísticas
+   *  𝝺𝝓⁴, adaptación directa de C, y variantes con numpy etc
+* Cuarto bloque: Tratamiento y análisis de datos.
+   * Visualización en tiempo real, widgets de control
+   * pandas. Manejo de DataFrames.
+   * análisis estadístico, histogramas, cálculo de errores, etc
+
+
+
+
+Bibliografía y materiales
+* Robert Johansson, Numerical Python, Second Edition
+* Fabio Nelli, Python Data Analytics, Second Edition
+* Al Sweigart, Automate the Boring Stuff with Python, Second Edition
+* HP Langtangen, A Primer on Scientific Programming with Python, Third Edition 
+* M Gorelik and I Ozsvald, High Performance Python, Second Edition        
+
+
+(En general, conviene verificar que los libros que se consulten estén usando python 3, y preferiblemente mayor o igual que 3.6. A esto se deben la mayor parte de las referencias a segundas ediciones)
+
+
+* Numpy https://numpy.org/doc/1.21/
+* Numba https://numba.readthedocs.io/en/stable/index.html
+* Scipy https://docs.scipy.org/doc/scipy/reference/
+* Matplotlib https://matplotlib.org/stable/contents.html
+* Jupyter-lab https://jupyterlab.readthedocs.io/en/stable/
+        
+Github de la asignatura
+        https://github.com/arivero/CursoPythonFis/
