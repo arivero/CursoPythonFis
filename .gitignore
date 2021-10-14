@@ -7,3 +7,5 @@ planetas/gcc*
 *log
 .vscode/extensions.json
 lambdaphi4/tirar/*
+lambdaphi4/cpure/tirar/*
+.gitignore

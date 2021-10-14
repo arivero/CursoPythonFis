@@ -1,0 +1,10 @@
+tirar/   Directorio_de_trabajo
+1000     Numero_de_medidas_por_archivo
+5	   Numero_de_iteraciones_sin_medir
+40	   Numero_de_archivos
+0	   Fichero_actual
+0	   Flag_inicio
+987654321 Semilla_random
+0.3	   Kappa
+0.5	   Lambda
+0.2	   Delta

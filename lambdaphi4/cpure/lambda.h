@@ -1,7 +1,7 @@
 #pragma warning(disable : 4996)
 #define n_ope  	   6    	   /* Numero de operadores en cada lattice */
 #define nhit       3		   /* numero de hits de Metropolis     	   */
-#define maxit      1000            /* maximo de medidas cada escritura 	   */
+#define maxit      10000            /* maximo de medidas cada escritura 	   */
 /***************************************************************************/
 /*#define DEBUG*/                  /*escribe en pantalla mas informacion */
 #define EVOL
@@ -13,14 +13,11 @@
 #include <time.h>
 #define L 8 //Se puede definir en tiempo de compilacion en al makefile
 #define Dim 3
-#define L 8
+
 #define L1 (L-1)
 #define L2 (L*L)
 #define L3 (L*L*L)
-#define V         (L*L*L)                     /* numero de sites         */
-#define Vmed      (int)((float)V/2.0+0.2)     /* mitad del volumen       */
-#define nlinks      V                         /* numero de links(puntos) */
-#define Norma_cor ( (float) (1.0 / (double) (L2*L2)))  */ OJO */
+#define V  (L*L*L)                     /* numero de sites         */
 #define twopi 6.283185307
 #define N_OTROS 3
 
