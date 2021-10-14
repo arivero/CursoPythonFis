@@ -1,7 +1,7 @@
 #pragma warning(disable : 4996)
 n_ope   = 6             # Numero de operadores en cada lattice 
 nhit    = 3             # numero de hits de Metropolis         
-maxit   = 1000          # maximo de medidas cada escritura     
+maxit   = 10000          # maximo de medidas cada escritura     
 #*************************************************************************
 DEBUG= False #*escribe en pantalla mas informacion */
 EVOL=False
@@ -10,14 +10,11 @@ IO=True
 
 L       = 8     #makefile? como lo pondriamos?
 Dim     = 3
-L       = 8
 L1      = (L-1)
 L2      = (L*L)
 L3      = (L*L*L)
 V       = (L*L*L)       # numero de sites         
-Vmed    = int(V/2.0+0.2)       # mitad del volumen       
-nlinks  = V             # numero de link(puntos) 
-Norma_cor  =  float (1.0 /  (L2*L2)) #OJO 
+
 twopi   = 6.283185307
 N_OTROS = 3
 

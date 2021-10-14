@@ -1,17 +1,18 @@
+import io
 from configlambda import * 
 import os.path
 localdir=""
 from aleatorio import reseed
 import random
 import numpy as np
-phi=np.empty([V], dtype=np.dtype(float) ) #inici medidas rrot update
+phi=np.empty([V], dtype=np.dtype(float) ) #campo
 x_p,y_p,z_p= [[0]*L,[0]*L,[0]*L]
 x_m,y_m,z_m= [[0]*L,[0]*L,[0]*L]
 
-cons=0.0; good=0.0 #update INMUTABLE Ya no se reajustan, pero se inicializan desde fichero :-(
-obs=[0.0]*n_obs #medidas
+cons=0.0; good=0.0 #para update INMUTABLE Ya no se reajustan, pero se inicializan desde fichero :-(
+obs=[0.0]*n_obs #para medidas
 
-datos=s_datos()  #inici medidas root update
+datos=s_datos() 
 
 v_dat=[[0.0]*maxit]*n_obs #root. Observese que los indices van de fuera adentro
 co=[precision()]*L; si=[precision()]*L #inici medidas
@@ -63,10 +64,19 @@ def main ():
         neigh[site,1] = x_p[x]
         neigh[site,0] = x_m[x]
         site += 1
+
+  #termalizacion
+  for _ in range(datos.itmax*10):
+          MetropolisUpdateAll(neigh,datos.mesfr)
+
+  #arrays para calculo de errores. Deben ser double.
+  temp_final=[0.0]*n_obs
+  temp_final2=[0.0]*n_obs     
+
   for ibin in range(datos.itcut, datos.nbin):   #loop en numero de bloques 
       #srand (int(datos.seed))   # queremos reproducir la misma secuencia que cuando se lee de un backup, ¿basta reseed? 
       temp = [0]*n_obs
-      
+      temp2 = [0]*n_obs
 
       good = 0.0
 
@@ -89,8 +99,11 @@ def main ():
 
           for iop in range(0, n_obs):
             temp[iop] += obs[iop]
+            temp2[iop] += obs[iop]*obs[iop]
       # Fin for datos.itmax 
-
+      for iop in range(0, n_obs):
+        temp_final[iop] += temp[iop]
+        temp_final2[iop] += temp2[iop]
       for iop in range(0, n_obs):
         temp[iop] /= datos.itmax
 
@@ -110,6 +123,14 @@ def main ():
       if IO:
           escribe_conf (0)
   # Fin for datos.nbin 
+  for iop in range(0, n_obs):
+    temp_final[iop] /= (datos.itmax*datos.nbin)
+    temp_final2[iop] /= (datos.itmax*datos.nbin)
+  print("Final Results")
+  from math import sqrt #bad practice
+  for iop in range(0, n_obs):
+    err=sqrt(temp_final2[iop]-temp_final[iop]*temp_final[iop])/sqrt(datos.itmax*datos.nbin)
+    print("O[%d] = %lf +- %lf" % (iop, temp_final[iop],err) )
   return 1
 
 if __name__ == '__main__':
