@@ -1,17 +1,8 @@
 """
-tiempo 200 loops con listas  22 segundos
-tiempo 200 loops con arrays python 26 segundos
-tiempo 200 loops arrays numpy  69 secs user, 1:10
-tiempo 200 loops arrays y sin, sqrt numpy 84 segundos. 1:24
-tiempo vectorizando euler tiempo vectorizando y sin reallocs 80 seg user 1:24 total
- si añadimos kronecker: baja a 45 segundos ... y sigue dando lo mismo que el Npython.txt :-)
- si transponemos para poder multiplicar vectorizado, nos baja a 39 segundos
- y a 35 segundos si usamos la transposicion tambien en la distancia.
-Finalmente, haciendo matricialmente las distancias ¡bajamos a 7 segundos! O menos si usamos otra multiplicacion
+tiempo vernet, en Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz : algo menos de 5 minutos  
 """
-#from numba import njit
+ 
 import numpy
-import array
 import numpy as np
 from numpy import sqrt,sin, square
 
@@ -39,7 +30,7 @@ MM=M[:,None] * M #Asi, M*M es un (n,n)
 Gmm = - G_Un* MM * nodiag
 
 
-#@njit()
+
 def main():
     xyz=numpy.empty((3,N_par),dtype=numpy.float64)
     v_xyz=numpy.empty((3,N_par),dtype=numpy.float64)
@@ -87,7 +78,7 @@ def main():
         tiempo+=mesfr*h
         Escribe_resultados(tiempo,x,y,z,v_x,v_y,v_z)
 
-#@njit()
+
 def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z,r2):
  
     Fx,Fy,Fz =  F[0],F[1],F[2]
@@ -116,7 +107,7 @@ def Evoluciona_dt(F,xyz,v_xyz, x, y, z, v_x, v_y, v_z,r2):
         #v_xyz.fill(0.0)
         np.copyto(v_xyz,v_temp+0.5*F*h/M)
 
-#@njit()
+
 def Calcula_Fuerza(F,xyz,r2):
     #xyz es un (3,n) 
     #F es tambien un (3,n)
@@ -139,7 +130,7 @@ def Calcula_Fuerza(F,xyz,r2):
     #return F
 
 
-#@njit()
+
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
     #
 
@@ -158,7 +149,7 @@ def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
                    i,x[i],y[i],z[i],v_x[i],v_y[i],v_z[i],Energia_c,Energia_p)
     Energia=Energia_c+Energia_p
     print(" %f %f %f %lf %f %f %f %f %f %f" %(time, Energia_c,Energia_p, Energia,x[0],y[0],z[0],x[1],y[1],z[1] ));
-    #//getchar();
-
+ 
+#esto no es habitual en python, pero lo hacemos para tener un main() como en C 
 main()
 
