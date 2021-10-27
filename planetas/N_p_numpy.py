@@ -141,7 +141,7 @@ def Calcula_Fuerza(F,xyz,r2):
 
 #@njit()
 def Escribe_resultados(time, x, y, z, v_x, v_y, v_z):
-    return
+    #
 
     Energia_p,Energia_c= 0.0, 0.0
     for i in range(N_par):
