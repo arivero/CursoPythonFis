@@ -98,4 +98,90 @@ class aleatorioBloque(_aleatorioBase):
         return r
  
 
- 
+class aleav2():
+    def __init__(self, seed=0):
+        random.seed(a=int(seed))
+        self.irr=[random.randrange(2**32) for _ in range(256)]
+        self.generator = self._generator()
+  
+    def _generator(self):
+        irrnp=np.array(self.irr,dtype=np.uintc)
+        while True:
+            bloque=irrnp[232:] + irrnp[201:225]
+            ir1 = bloque ^ irrnp[195:219]
+            irrnp=np.concatenate( (irrnp[24:],bloque) )
+            for r in ir1 * NormRANu:
+                yield r
+
+    def rng(self):
+        return next(self.generator)
+
+class aleav2plain():
+    def __init__(self, seed=0):
+        random.seed(a=int(seed))
+        self.irr=[random.randrange(2**32) for _ in range(256)]
+        self.generator = self._generator()
+  
+    def _generator(self):
+        irr=self.irr
+        while True:
+            bloque=[ (a+b) & 4294967295  for a,b in zip(irr[232:] , irr[201:225])]
+            ir1 = [ a ^ b for a, b in zip(bloque,irr[195:219])]
+            irr=irr[24:]+bloque
+            for r in ir1:
+                yield r * NormRANu
+
+    def rng(self):
+        return next(self.generator)
+
+@njit()
+def _rngJit2(irrnp):
+    bloque=irrnp[232:] + irrnp[201:225]
+    ir1 = bloque ^ irrnp[195:219]
+    irrnp[:]=np.concatenate( (irrnp[24:],bloque) )
+    return ir1 * NormRANu
+
+
+class aleav2Numba():
+    def __init__(self, seed=0):
+        random.seed(a=int(seed))
+        self.irr=[random.randrange(2**32) for _ in range(256)]
+        self.generator = self._generator()
+  
+    def _generator(self):
+        irrnp=np.array(self.irr,dtype=np.uintc)
+        while True:
+            ir1=_rngJit2(irrnp)
+            for r in ir1:
+                yield r
+
+    def rng(self):
+        return next(self.generator)
+
+@njit() #sin compilar 33 microsecs, compilando 323 nanosecs: un factor 100
+def _rngJit3(ig,irrnp,ir1):
+    for i in range(len(ir1)):
+        irrnp[ig[0]] = irrnp[ig[1]] + irrnp[ig[2]]
+        ir1[i] = (irrnp[ig[0]] ^ irrnp[ig[3]])
+        for x in range(4):
+            ig[x]+=1
+        #ig[:]= ig + np.array([1,1,1,1],dtype=np.ubyte) # es mas lento
+    return ir1 * NormRANu
+
+class aleav2NumbaIdx():
+    def __init__(self, seed=0, prefetch=2048):
+        random.seed(a=int(seed))
+        self.irr=[random.randrange(2**32) for _ in range(256)]
+        self.generator = self._generator()
+        self.prefetch=prefetch
+  
+    def _generator(self):
+        irrnp=np.array(self.irr,dtype=np.uintc)
+        ig = np.array([0,-24,-55,-61],dtype=np.ubyte)
+        prefetch=np.ndarray(self.prefetch, dtype=np.uintc)
+        while True:
+            for x in _rngJit3(ig, irrnp, prefetch):
+                yield x
+
+    def rng(self):
+        return next(self.generator)
